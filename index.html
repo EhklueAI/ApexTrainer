@@ -532,12 +532,7 @@ document.querySelectorAll('.feature-card,.plan,.testi,.step').forEach(el=>{
   el.style.opacity='0';el.style.transform='translateY(24px)';el.style.transition='opacity 0.6s ease, transform 0.6s ease';
   observer.observe(el);
 });
-// Smooth page transitions
-document.querySelectorAll('a[href]').forEach(a=>{
-  const href = a.getAttribute('href');
-  if(!href.startsWith('#') && href.endsWith('.html')){
-    a.addEventListener('click',function(e){
-    <script>
+<script>
       // 1. Smooth page transitions
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
           anchor.addEventListener('click', function (e) {
@@ -552,11 +547,11 @@ document.querySelectorAll('a[href]').forEach(a=>{
       const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
       script.onload = () => {
-          // 3. Connect to Database
-          var SUPABASE_URL = 'https://tqnovzczkormdcbjwmpf.supabase.co';
-          var SUPABASE_KEY = 'sb_publishable_fmbbDV0EvQXE6YOTpY-QZg_VH5UFnKT';
+          // 3. Connect to Database using your keys
+          const SUPABASE_URL = 'https://tqnovzczkormdcbjwmpf.supabase.co';
+          const SUPABASE_KEY = 'sb_publishable_fmbbDV0EvQXE6YOTpY-QZg_VH5UFnKT';
           
-          // Using window.supabaseClient makes it accessible everywhere
+          // We attach it to 'window' so it can't be "re-declared" as an error
           window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
           console.log("ApexTrainer AI: System Online & Connected.");
       };

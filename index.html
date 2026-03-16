@@ -546,5 +546,15 @@ document.querySelectorAll('a[href]').forEach(a=>{
   }
 });
 </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // These are your actual keys from the dashboard screenshot you showed me
+  const SUPABASE_URL = 'https://tqnovzczkormdcbjwmpf.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_fmbbDVOEvQXE6YOTpY-QZg_VH5UfnKT'; // PASTE the sb_publishable string here
+  
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  console.log("ApexTrainer AI: Connection established.");
+</script>
 </body>
 </html>

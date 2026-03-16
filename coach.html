@@ -189,17 +189,37 @@ function showTyping() {
   return typing;
 }
 
-function sendMessage() {
+async function sendMessage() {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if(!text) return;
-  addMsg(text, true);
+
+  addMsg(text, true); 
   input.value = '';
-  const typing = showTyping();
-  setTimeout(() => {
+  
+  const typing = showTyping(); 
+
+  try {
+    const endpoint = 'https://tqnovzczkormdcbjwmpf.supabase.co/functions/v1/Apex-Coach'; 
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: text })
+    });
+
+    const data = await response.json();
+    typing.remove(); 
+
+    if (data.reply) {
+      addMsg(data.reply, false);
+    } else {
+      addMsg("APEX Error: " + (data.error || "Check your Supabase Logs"), false);
+    }
+  } catch (err) {
     typing.remove();
-    addMsg(getResponse(text), false);
-  }, 900 + Math.random()*600);
+    addMsg("System Error: Connection to APEX core lost.", false);
+  }
 }
 
 function quickMsg(text) {

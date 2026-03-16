@@ -546,7 +546,7 @@ const observer = new IntersectionObserver((entries)=>{
           const SUPABASE_URL = 'https://tqnovzczkormdcbjwmpf.supabase.co';
           const SUPABASE_KEY = 'sb_publishable_fmbbDV0EvQXE6YOTpY-QZg_VH5UFnKT';
           
-          // Using window prevents "already declared" errors if you refresh
+          // Using window prevents "already declared" errors
           window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
           console.log("ApexTrainer AI: System Online & Connected.");
       };

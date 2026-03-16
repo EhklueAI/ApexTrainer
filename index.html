@@ -537,24 +537,30 @@ document.querySelectorAll('a[href]').forEach(a=>{
   const href = a.getAttribute('href');
   if(!href.startsWith('#') && href.endsWith('.html')){
     a.addEventListener('click',function(e){
-      e.preventDefault();
-      const overlay=document.getElementById('overlay');
-      overlay.style.opacity='1';
-      overlay.style.pointerEvents='all';
-      setTimeout(()=>{ window.location.href=href; },300);
-    });
-  }
-});
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
-      var SUPABASE_URL = 'https://tqnovzczkormdcbjwmpf.supabase.co';
-      var SUPABASE_KEY = 'sb_publishable_fmbbDV0EvQXE6YOTpY-QZg_VH5UFnKT';
-      
-      // Using 'var' here prevents the "already declared" red error
-      var supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      // 1. Smooth page transitions
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+          anchor.addEventListener('click', function (e) {
+              e.preventDefault();
+              document.querySelector(this.getAttribute('href')).scrollIntoView({
+                  behavior: 'smooth'
+              });
+          });
+      });
 
-      console.log("ApexTrainer AI: Connection established.");
+      // 2. Load Supabase Library
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      script.onload = () => {
+          // 3. Connect to Database
+          var SUPABASE_URL = 'https://tqnovzczkormdcbjwmpf.supabase.co';
+          var SUPABASE_KEY = 'sb_publishable_fmbbDV0EvQXE6YOTpY-QZg_VH5UFnKT';
+          
+          // Using window.supabaseClient makes it accessible everywhere
+          window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+          console.log("ApexTrainer AI: System Online & Connected.");
+      };
+      document.head.appendChild(script);
     </script>
   </body>
 </html>

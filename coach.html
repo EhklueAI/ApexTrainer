@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APEX AI Coach – ApexTrainer AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--cyan:#00f5ff;--cyan-dim:#00c4cc;--cyan-dark:#007a82;--black:#000;--dark:#050a0a;--dark2:#0a1414;--dark3:#0d1c1c;--text:#c8f0f0;--white:#fff;--glow:0 0 20px rgba(0,245,255,0.5);--glow-sm:0 0 10px rgba(0,245,255,0.4);}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--dark);color:var(--text);font-family:'Rajdhani',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);pointer-events:none;z-index:9999;}
+  nav{background:rgba(5,10,10,0.98);border-bottom:1px solid rgba(0,245,255,0.15);padding:0 5%;flex-shrink:0;}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:65px;}
+  .logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.1rem;color:var(--cyan);text-shadow:var(--glow-sm);text-decoration:none;letter-spacing:2px;}
+  .nav-right{display:flex;gap:1rem;align-items:center;}
+  .back-btn{color:var(--text);text-decoration:none;font-size:0.85rem;font-weight:600;letter-spacing:1px;opacity:0.6;transition:opacity 0.3s;}
+  .back-btn:hover{opacity:1;color:var(--cyan);}
+  .coach-layout{display:flex;flex:1;overflow:hidden;}
+  /* SIDEBAR */
+  .coach-sidebar{width:260px;background:var(--dark2);border-right:1px solid rgba(0,245,255,0.1);display:flex;flex-direction:column;flex-shrink:0;}
+  .coach-profile{padding:1.5rem;border-bottom:1px solid rgba(0,245,255,0.08);text-align:center;}
+  .coach-avatar{width:70px;height:70px;background:linear-gradient(135deg,var(--cyan-dark),#001a1a);border:2px solid var(--cyan);margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:var(--glow-sm);animation:pulse 2.5s infinite;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 10px rgba(0,245,255,0.3);}50%{box-shadow:0 0 25px rgba(0,245,255,0.7);}}
+  .coach-name{font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;color:var(--cyan);letter-spacing:2px;}
+  .coach-status{font-size:0.8rem;color:#00ff88;margin-top:0.3rem;}
+  .coach-desc{font-size:0.85rem;opacity:0.55;margin-top:0.7rem;line-height:1.5;}
+  .suggestions{padding:1.2rem;}
+  .sug-title{font-size:0.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);opacity:0.7;margin-bottom:1rem;}
+  .sug-btn{display:block;width:100%;background:var(--dark3);border:1px solid rgba(0,245,255,0.1);color:var(--text);padding:0.65rem 0.8rem;font-family:'Rajdhani',sans-serif;font-size:0.85rem;text-align:left;cursor:pointer;margin-bottom:0.5rem;transition:all 0.3s;line-height:1.4;}
+  .sug-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.05);}
+  /* CHAT */
+  .chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+  .chat-header{padding:1rem 1.5rem;border-bottom:1px solid rgba(0,245,255,0.08);display:flex;align-items:center;justify-content:space-between;background:var(--dark2);flex-shrink:0;}
+  .chat-header-left{display:flex;align-items:center;gap:0.8rem;}
+  .chat-header-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan-dark),#001a1a);border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:1rem;}
+  .chat-header-name{font-family:'Orbitron',monospace;font-size:0.85rem;font-weight:700;color:var(--white);}
+  .chat-header-status{font-size:0.75rem;color:#00ff88;}
+  .chat-messages{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;}
+  .chat-messages::-webkit-scrollbar{width:4px;}
+  .chat-messages::-webkit-scrollbar-track{background:var(--dark2);}
+  .chat-messages::-webkit-scrollbar-thumb{background:var(--cyan-dark);}
+  .msg-row{display:flex;align-items:flex-start;gap:0.8rem;}
+  .msg-row.user{flex-direction:row-reverse;}
+  .msg-icon{width:36px;height:36px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;background:rgba(0,245,255,0.07);border:1px solid rgba(0,245,255,0.15);}
+  .msg-content{max-width:70%;}
+  .msg-sender{font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cyan);margin-bottom:0.3rem;opacity:0.7;}
+  .msg-row.user .msg-sender{text-align:right;color:var(--cyan-dim);}
+  .msg-bubble{padding:0.8rem 1.1rem;font-size:0.95rem;line-height:1.6;}
+  .msg-row:not(.user) .msg-bubble{background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.12);border-left:3px solid var(--cyan);}
+  .msg-row.user .msg-bubble{background:rgba(0,245,255,0.12);border:1px solid rgba(0,245,255,0.2);border-right:3px solid var(--cyan-dim);}
+  .msg-time{font-size:0.7rem;opacity:0.35;margin-top:0.3rem;}
+  .msg-row.user .msg-time{text-align:right;}
+  .typing-indicator{display:flex;align-items:center;gap:0.8rem;}
+  .typing-dots{display:flex;gap:4px;padding:0.8rem 1.1rem;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.12);border-left:3px solid var(--cyan);}
+  .typing-dots span{width:7px;height:7px;background:var(--cyan);border-radius:50%;animation:dot 1.4s infinite;}
+  .typing-dots span:nth-child(2){animation-delay:0.2s;}
+  .typing-dots span:nth-child(3){animation-delay:0.4s;}
+  @keyframes dot{0%,80%,100%{transform:scale(0.5);opacity:0.4;}40%{transform:scale(1);opacity:1;}}
+  /* INPUT */
+  .chat-input-area{padding:1rem 1.5rem;border-top:1px solid rgba(0,245,255,0.08);background:var(--dark2);flex-shrink:0;}
+  .input-row{display:flex;gap:0.8rem;align-items:center;}
+  .chat-input{flex:1;background:var(--dark3);border:1px solid rgba(0,245,255,0.15);color:var(--white);padding:0.85rem 1.1rem;font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;transition:border-color 0.3s;}
+  .chat-input:focus{border-color:var(--cyan);box-shadow:0 0 8px rgba(0,245,255,0.1);}
+  .send-btn{background:var(--cyan);color:var(--black);border:none;padding:0.85rem 1.5rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.3s;letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
+  .send-btn:hover{background:var(--white);box-shadow:var(--glow-sm);}
+  .input-hint{font-size:0.75rem;opacity:0.35;margin-top:0.5rem;text-align:center;}
+  @media(max-width:700px){.coach-sidebar{display:none;}.msg-content{max-width:85%;}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="index.html">APEX<span style="color:#fff;">TRAINER</span> AI</a>
+    <div class="nav-right">
+      <a class="back-btn" href="dashboard.html">← Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<div class="coach-layout">
+  <div class="coach-sidebar">
+    <div class="coach-profile">
+      <div class="coach-avatar">🤖</div>
+      <div class="coach-name">APEX</div>
+      <div class="coach-status">● Online — Ready to train</div>
+      <div class="coach-desc">Your personal AI fitness coach. Ask me anything about workouts, form, nutrition, recovery, or updating your plan.</div>
+    </div>
+    <div class="suggestions">
+      <div class="sug-title">Quick Questions</div>
+      <button class="sug-btn" onclick="quickMsg('How should I warm up for leg day?')">🦵 Leg day warm-up tips?</button>
+      <button class="sug-btn" onclick="quickMsg('My lower back hurts. Can you modify my deadlift workout?')">⚠️ Exercise modification for back pain</button>
+      <button class="sug-btn" onclick="quickMsg('What should I eat before my workout?')">🥗 Pre-workout nutrition advice</button>
+      <button class="sug-btn" onclick="quickMsg('Can you change my plan to focus more on muscle gain?')">🔄 Change my plan focus</button>
+      <button class="sug-btn" onclick="quickMsg('How many rest days should I take per week?')">😴 How many rest days do I need?</button>
+      <button class="sug-btn" onclick="quickMsg('I only have 30 minutes today. Give me a quick workout.')">⚡ Quick 30-minute workout</button>
+    </div>
+  </div>
+
+  <div class="chat-main">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-header-avatar">🤖</div>
+        <div>
+          <div class="chat-header-name">APEX AI COACH</div>
+          <div class="chat-header-status">● Online · Responds instantly</div>
+        </div>
+      </div>
+      <div style="font-size:0.75rem;opacity:0.4;font-family:'Orbitron',monospace;">PRO PLAN</div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg-row">
+        <div class="msg-icon">🤖</div>
+        <div class="msg-content">
+          <div class="msg-sender">APEX</div>
+          <div class="msg-bubble">Hey John! I'm APEX, your personal AI training coach. 💪<br><br>Today is <strong>Leg Day</strong> — Squat, Romanian Deadlift, Leg Press, and Walking Lunges. Your target for squats this session is <strong style="color:var(--cyan);">275 lbs × 4 sets of 5</strong>.<br><br>Ask me anything — form tips, exercise swaps, nutrition, or tell me to change your plan entirely. What's on your mind?</div>
+          <div class="msg-time">Today, 9:00 AM</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <div class="input-row">
+        <input class="chat-input" id="chatInput" type="text" placeholder="Ask APEX anything — workouts, form, nutrition, plan changes..." onkeypress="if(event.key==='Enter')sendMessage()">
+        <button class="send-btn" onclick="sendMessage()">Send</button>
+      </div>
+      <div class="input-hint">APEX uses your profile and workout history to give personalized answers</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const now = () => {
+  const d = new Date();
+  return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+};
+
+const aiResponses = {
+  "warm": "Great question! For leg day, start with 5 min light bike or jump rope, then do: \n\n• Bodyweight squats: 2×15\n• Hip circles: 10 each direction\n• Leg swings: 15 each side\n• Box squats at 50% working weight: 2×8\n\nThen pyramid up: 135×8, 185×5, 225×3 before your working sets. Your joints will thank you! 🦵",
+  "back": "Smart move to flag that! With lower back discomfort, let's swap Romanian Deadlifts for **Leg Curls** today. For squats, reduce to 60% of working weight and focus on keeping your chest up and core braced.\n\nIf it's persistent, consider a deload week. Want me to officially update your plan with these modifications?",
+  "eat": "For your session today (strength focus), here's what I recommend:\n\n**2-3 hours before:** Rice + chicken or oats + protein powder. Aim for ~40g protein, 60g carbs.\n\n**30 min before:** Banana + 5g creatine if you use it.\n\n**During:** Water — 16-24 oz per hour of training.\n\n**After (within 30 min):** Protein shake + fast carbs (fruit, rice cakes). Your muscles are primed to absorb nutrients! 🥗",
+  "change": "I can absolutely rebuild your program for more muscle gain (hypertrophy focus)! I'll adjust:\n\n• **Rep ranges** → 8-12 (hypertrophy zone)\n• **Volume** → More sets per muscle group\n• **Frequency** → Each muscle hit 2× per week\n• **Rest times** → 90 sec between sets\n\nThis will use **1 of your 5 monthly plan changes**. Want me to go ahead and regenerate your full program?",
+  "rest": "For your training intensity (4-5 days/week, strength + hypertrophy), 2 rest days per week is ideal. Here's how I'd structure it:\n\n• **Active rest:** Light walk, mobility work, yoga\n• **Full rest:** Nothing strenuous — let muscles repair\n\nYou're currently at **92% consistency** this month — incredible! Just don't skip recovery or you'll hit a plateau. Quality sleep (7-9 hrs) is when growth actually happens. 😴",
+  "30": "Perfect — here's a 30-minute full body crusher:\n\n**Circuit (3 rounds, minimal rest):**\n1. Goblet Squat × 12\n2. Push-ups × 15\n3. Dumbbell Row × 10 each\n4. Reverse Lunges × 12 each\n5. Plank Hold × 45 sec\n\n**Rest 60 seconds between rounds.**\n\nYou'll hit every major muscle group and get your heart rate up. Total time: ~28 min. Go! ⚡",
+  "default": [
+    "Based on your current program and the progress you've made, here's my advice: focus on progressive overload — add 5 lbs to your compound lifts every 1-2 weeks. Consistency beats intensity. 💪",
+    "That's a great question! Your training data shows you respond well to higher volume on push muscles. I'd lean into that — try adding an extra set to your bench press and overhead press.",
+    "I've analyzed your recent sessions. Your squat depth has been improving, but watch your knee tracking — make sure they follow your toes throughout the movement.",
+    "Smart thinking! Recovery is where growth actually happens. Are you hitting 7-9 hours of sleep? That's when your body releases the most growth hormone.",
+    "Your plan is dialed in for your goals. If you want to change the focus or swap any exercises, just say the word — I can regenerate your program using one of your monthly changes. 🔄",
+    "You're making incredible progress! 34 total workouts and a 7-week streak — that's elite-level consistency. Most people quit after 2 weeks. Keep it up! 🔥"
+  ]
+};
+
+function getResponse(msg) {
+  const m = msg.toLowerCase();
+  if(m.includes('warm') || m.includes('warm up') || m.includes('warmup') || m.includes('leg day warm')) return aiResponses.warm;
+  if(m.includes('back') || m.includes('hurt') || m.includes('pain') || m.includes('injur') || m.includes('modify')) return aiResponses.back;
+  if(m.includes('eat') || m.includes('food') || m.includes('nutrition') || m.includes('pre-workout') || m.includes('pre workout')) return aiResponses.eat;
+  if(m.includes('change') || m.includes('muscle') || m.includes('gain') || m.includes('hypertro') || m.includes('bulk')) return aiResponses.change;
+  if(m.includes('rest') || m.includes('recovery') || m.includes('sleep')) return aiResponses.rest;
+  if(m.includes('30') || m.includes('quick') || m.includes('short') || m.includes('minute')) return aiResponses['30'];
+  return aiResponses.default[Math.floor(Math.random()*aiResponses.default.length)];
+}
+
+function addMsg(text, isUser, time) {
+  const msgs = document.getElementById('chatMessages');
+  const row = document.createElement('div');
+  row.className = 'msg-row' + (isUser ? ' user' : '');
+  const formatted = text.replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--cyan)">$1</strong>').replace(/\n/g,'<br>');
+  row.innerHTML = `<div class="msg-icon">${isUser ? '👤' : '🤖'}</div>
+    <div class="msg-content">
+      <div class="msg-sender">${isUser ? 'YOU' : 'APEX'}</div>
+      <div class="msg-bubble">${formatted}</div>
+      <div class="msg-time">${time || now()}</div>
+    </div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chatMessages');
+  const typing = document.createElement('div');
+  typing.className = 'msg-row typing-row';
+  typing.innerHTML = `<div class="msg-icon">🤖</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(typing);
+  msgs.scrollTop = msgs.scrollHeight;
+  return typing;
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  addMsg(text, true);
+  input.value = '';
+  const typing = showTyping();
+  setTimeout(() => {
+    typing.remove();
+    addMsg(getResponse(text), false);
+  }, 900 + Math.random()*600);
+}
+
+function quickMsg(text) {
+  document.getElementById('chatInput').value = text;
+  sendMessage();
+}
+</script>
+</body>
+</html>
